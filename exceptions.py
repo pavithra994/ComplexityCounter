@@ -1,0 +1,2 @@
+class CCErrors(Exception):
+    pass

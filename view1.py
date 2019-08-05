@@ -1,38 +1,17 @@
 from tkinter import *
 from tkinter import filedialog
-import model,configurations,controller
 
 
-class MainWindow():
+class MainWindow(Tk):
     def __init__(self):
+        # Tk.__init__(self)
         self.root = Tk()
         self.root.title("ComplexityCounter | Complexity measuring tool")
         self.root.minsize(640,400)
 
         # menu bar
-        self.menubar = Menu(self.root)
+        # MainMenu.__init__(self.root)
 
-        self.filemenu = Menu(self.menubar, tearoff=0)
-        self.filemenu.add_command(label="New", accelerator='Ctrl+N', compound=LEFT, underline=0)
-        self.filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, underline=0, command= self.openFile)
-        self.filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, underline=0)
-        self.filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S')
-        self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", accelerator='Alt+F4')
-        self.menubar.add_cascade(label="File", menu=self.filemenu)
-
-        # self.editmenu = Menu(self.menubar, tearoff=0)
-        # self.menubar.add_cascade(label="Edit", menu=self.editmenu)
-        #
-        # self.viewmenu = Menu(self.menubar, tearoff=0)
-        # self.menubar.add_cascade(label="View", menu=self.viewmenu)
-
-        self.aboutmenu = Menu(self.menubar, tearoff=0)
-        self.aboutmenu.add_command(label="About")
-        self.aboutmenu.add_command(label="Help")
-        self.menubar.add_cascade(label="About", menu=self.aboutmenu)
-
-        self.root.config(menu=self.menubar)
 
         # shortcut bar
         self.shortcutbar = Frame(self.root, height=50, bg='light sea green')
@@ -93,6 +72,32 @@ class MainWindow():
         endline, endcolumn = self.textPad.index('end-1c').split('.')
         txt = '\n'.join(map(str, range(1, int(endline))))
         self.lnlabel.config(text=txt, anchor='nw')
+
+class MainMenu(Menu):
+    def __init__(self,root):
+        self.menubar = Menu(root)
+
+        self.filemenu = Menu(self.menubar, tearoff=0)
+        self.filemenu.add_command(label="New", accelerator='Ctrl+N', compound=LEFT, underline=0)
+        self.filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, underline=0, command=self.openFile)
+        self.filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, underline=0)
+        self.filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S')
+        self.filemenu.add_separator()
+        self.filemenu.add_command(label="Exit", accelerator='Alt+F4')
+        self.menubar.add_cascade(label="File", menu=self.filemenu)
+
+        # self.editmenu = Menu(self.menubar, tearoff=0)
+        # self.menubar.add_cascade(label="Edit", menu=self.editmenu)
+        #
+        # self.viewmenu = Menu(self.menubar, tearoff=0)
+        # self.menubar.add_cascade(label="View", menu=self.viewmenu)
+
+        self.aboutmenu = Menu(self.menubar, tearoff=0)
+        self.aboutmenu.add_command(label="About")
+        self.aboutmenu.add_command(label="Help")
+        self.menubar.add_cascade(label="About", menu=self.aboutmenu)
+
+        self.root.config(menu=self.menubar)
 
 
 if __name__ == '__main__':
