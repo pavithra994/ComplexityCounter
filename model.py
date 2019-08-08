@@ -1,5 +1,5 @@
 """
-    here we implement all logics in ComplexityCounter
+    here we implement all logic in ComplexityCounter
         complexity measuring functions
             - calculateBySize
             - calculateTypeOfControl
