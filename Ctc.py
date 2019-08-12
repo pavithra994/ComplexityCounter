@@ -30,6 +30,14 @@ for num, line in enumerate(code,1):
             Ctc += 2
             print("In line number : ",num,"-> Ctc with for and && or ||: ",Ctc)
 
+    if  re.search('(do)\s*\{',line) :
+        Ctc = 0
+        Ctc += 2
+        print("In line number : ",num,"-> Ctc with only do while : ",Ctc)
+        
+        if re.search("\s*\(.*(&&).*\)\s*{", line) or re.search("\s*\(.*\||\.\)\s",line):
+            Ctc += 2
+            print("In line number : ",num,"-> Ctc with do while and && or ||: ",Ctc)
 
 
 
