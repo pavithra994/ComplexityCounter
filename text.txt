@@ -1,0 +1,21 @@
+
+
+public class fibonicMain{
+	public static long fibonic(long number){
+		if((number == 0 )||(number == 1)){
+			return number;
+		}
+		else{
+			// recursion
+			return fibonic(number -1)+fibonic(number -2);
+		}
+		while ( (x>42) || (y<42) || (n==42) ) { 
+   		/* ... */
+		}
+	}
+	public static void main(Stringargs[]){
+		for(int count = 0;count<=10;count++){
+			System.out.println("dfghgdhjsfh")
+		}
+	}
+}
