@@ -39,6 +39,11 @@ for num, line in enumerate(code,1):
             Ctc += 2
             print("In line number : ",num,"-> Ctc with do while and && or ||: ",Ctc)
 
+    if  re.search('(catch)\s*\(.*\)\s*\{',line) :
+        Ctc = 0
+        Ctc += 1
+        print("In line number : ",num,"-> Ctc with catch : ",Ctc)
+
 
 
 # code = open("text.txt")
