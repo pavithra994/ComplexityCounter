@@ -14,29 +14,51 @@ class CodeFactory:
     def __init__(self, code):
         self.code = code
         self.classList = []
-        self.classDivider()
+        # self.classDivider()
+        self.setClassList()
 
-    def classDivider(self):
-        # divide codes into classes and assign to classList
+    # def classDivider(self):
+    #     # divide codes into classes and assign to classList
+    #
+    #     temp_code = self.code
+    #     start_index = 0
+    #     className = None
+    #     # TODO: use RegEx instead .find(" class ")
+    #     while temp_code.find(" class ") is not -1:
+    #         temp_code = temp_code[temp_code.find(" class ") + 7:]
+    #         # len(' class ') = 7
+    #         # remove public, static like key words with 'class'
+    #         temp = temp_code.split(' ', 1)
+    #         # divide into parts in first space
+    #         # NameOfClass extend NameOfParentClass {......}
+    #         # temp[0]     | temp[1]
+    #         className = temp[0]
+    #         temp_code = temp[1]
+    #         start, end = indexOfParenthesis(temp_code, 0)
+    #         # indexOfParenthesis(code,stop_index) returns index of first '{' and index of couple '}'
+    #         classBody = temp_code[start:end]
+    #         temp_code = temp_code[end:]
+    #         self.classList.append(Class(className, classBody, parentClassFinder(temp_code[:start+1])))
 
+    def setClassList(self):
         temp_code = self.code
-        start_index = 0
-        className = None
-        while temp_code.find(" class ") is not -1:
-            temp_code = temp_code[temp_code.find(" class ") + 7:]
-            # len(' class ') = 7
-            # remove public, static like key words with 'class'
-            temp = temp_code.split(' ', 1)
-            # divide into parts in first space
-            # NameOfClass extend NameOfParentClass {......}
-            # temp[0]     | temp[1]
-            className = temp[0]
-            temp_code = temp[1]
-            start, end = indexOfParenthesis(temp_code, 0)
-            # indexOfParenthesis(code,stop_index) returns index of first '{' and index of couple '}'
-            classBody = temp_code[start:end]
-            temp_code = temp_code[end:]
-            self.classList.append(Class(className, classBody, parentClassFinder(temp_code[:start+1])))
+        for class_index in re.finditer("\sclass\s*",temp_code):
+            pstart, pend = indexOfParenthesis(temp_code,class_index.end())
+            class_seg = temp_code[class_index.end():pstart].split(' ',1)
+            # class_seg[0] is class name and if there is parent class class_seg[1] is that keywords
+            class_name = class_seg[0]
+            try:
+                parent_name = parentClassFinder(class_seg[1])
+            except IndexError:
+                parent_name = 'Object'
+            class_body = temp_code[pstart:pend].strip(' {}')
+            self.classList.append(Class(class_name,class_body , parent_name))
+
+
+
+
+
+
 
     # def classDivider(code):
     #     print("function running --")
@@ -132,6 +154,45 @@ def parentClassFinder(code):
     for i, segment in enumerate(keywords):
         if segment == 'extend':
             return keywords[i+1]
+    return 'Object'
+
+
+
+# testing
+
+code = '''
+//this is testin java
+
+public class App {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+
+  private King king;
+  private Castle castle;
+  private Army army;
+
+  public void createKingdom(final KingdomFactory factory) {
+    setKing(factory.createKing());
+    setCastle(factory.createCastle());
+    setArmy(factory.createArmy());
+  }
+}
+
+public class pavi extend parent {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+
+  private King king;
+  private Castle castle;
+  private Army army;
+
+  public void createKingdom(final KingdomFactory factory) {
+    setKing(factory.createKing());
+    setCastle(factory.createCastle());
+    setArmy(factory.createArmy());
+  }
+}'''
+c = CodeFactory(code)
 
 
 
