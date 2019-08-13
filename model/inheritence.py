@@ -1,5 +1,4 @@
-from model.complexity import *
-
+from .complexity import Class
 code = '''class Employee{  
  float salary=40000;  
 }  
@@ -12,15 +11,15 @@ class Programmer extends Employee{
 }  
 }  '''
 
-C = parentClassFinder(code)
+# C = parentClassFinder(code)
 
-def checkInheritence(i):
-    for i in C.classList:
-        if Class.className == "Object":
-            return 1
-
-        else:
-            return Class.className.match +1
+# def checkInheritence(i):
+#     for i in C.classList:
+#         if Class.className == "Object":
+#             return 1
+#
+#         else:
+#             return Class.className.match +1
 
 # ashimi try this
     

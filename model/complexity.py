@@ -23,7 +23,7 @@ class CodeFactory:
     #     temp_code = self.code
     #     start_index = 0
     #     className = None
-    #     # TODO: use RegEx instead .find(" class ")
+    #
     #     while temp_code.find(" class ") is not -1:
     #         temp_code = temp_code[temp_code.find(" class ") + 7:]
     #         # len(' class ') = 7
@@ -54,6 +54,12 @@ class CodeFactory:
             class_body = temp_code[pstart:pend].strip(' {}')
             self.classList.append(Class(class_name,class_body , parent_name))
 
+    def __str__(self):
+        line1 = ""
+        for i,cls in enumerate(self.classList,1):
+            line1 += str(i) + ".\t"+ cls.__str__() +"\n"
+        return line1
+
 
 
 
@@ -79,9 +85,9 @@ class Class:
         self.parentClass = parent_class
         self.methodList = []
         self.attributeList = []
-        self.methodDivider(body)
+        self.setMethodListAndAttributeList(body)
 
-    def methodDivider(self, body):
+    def setMethodListAndAttributeList(self, body):
         body_without_methods = body
         for indexes in re.finditer("\w*\s*\(.*\)\s*\{", body):
             # need will return functions and also  if, while, for, catch
@@ -93,7 +99,7 @@ class Class:
                 # print(body[s:e])
                 for i, c in enumerate(body[s::-1]):
                     if c == '}' or c == ';':
-                        self.methodList.append(Method(name, body[s - i + 1:e]))
+                        self.methodList.append(Method(name, body[s - i + 1:e].strip()))
                         body_without_methods = body_without_methods.replace(body[s - i + 1:e], '')
                         break
         # attributes divider
@@ -101,6 +107,15 @@ class Class:
             if codeline.strip() != '':
                 self.attributeList.append(codeline.strip())
 
+    def __str__(self):
+        attr = ""
+        for at in self.attributeList:
+            attr += at +"\n"
+
+        meth = ""
+        for m in self.methodList:
+            meth += m.__str__() + "\n"
+        return "class name\t: "+ self.className+ "\tparent name\t: "+self.parentClass + "\n\n"+ attr+"\n"+meth
 
 class Method:
     def __init__(self, name, code_list):
@@ -112,6 +127,8 @@ class Method:
         print("---------------")
         print(self.codeList)
 
+    def __str__(self):
+        return self.codeList
 
 # def indexOfParenthesis(code):
 #     start_index = -1
@@ -176,6 +193,10 @@ public class App {
     setCastle(factory.createCastle());
     setArmy(factory.createArmy());
   }
+  
+  int main(string y){
+    test();
+  }
 }
 
 public class pavi extend parent {
@@ -194,5 +215,5 @@ public class pavi extend parent {
 }'''
 c = CodeFactory(code)
 
-
+print(c)
 
