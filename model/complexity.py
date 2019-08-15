@@ -198,6 +198,7 @@ def lineCounterOfNestedController(code):
 
 # code = open("java.java")
 # print (lineCounterOfNestedController(code))
+code.close()
             
 ############### Type of Control structure #################
 
@@ -250,6 +251,7 @@ def identifyControlStructure(code):
 
 code = open("java.java")
 print (identifyControlStructure(code))
+code.close()
 
 # testing
 
