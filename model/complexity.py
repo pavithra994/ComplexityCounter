@@ -102,6 +102,13 @@ class Method:
     def getCodeListLineByLine(self):
         return self.codeList.split('\n')
 
+    def hasRecurtion(self):
+        pattern = self.methodName + '\s*\('
+        start, end = indexOfParenthesis(self.codeList,0)
+        if re.search(pattern,self.codeList[start:end]) is None:
+            return False
+        return True
+
 
 # def indexOfParenthesis(code):
 #     start_index = -1
@@ -164,26 +171,24 @@ public class App {
     setKing(factory.createKing());
     setCastle(factory.createCastle());
     setArmy(factory.createArmy());
-  }
-
-  int main(string y){
-    test();
+    createKingdom(x);
   }
 }
 
-public class pavi extend parent {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+public class Student extend App{
+    private int sid;
+    private String sname;
+    private String Address;
 
-  private King king;
-  private Castle castle;
-  private Army army;
+    public void print(){
+        print.all();
+    }
 
-  public void createKingdom(final KingdomFactory factory) {
-    setKing(factory.createKing());
-    setCastle(factory.createCastle());
-    setArmy(factory.createArmy());
-  }
+    public void delete(){
+        delete.all();
+    }
+
 }'''
 c = CodeFactory(code)
 

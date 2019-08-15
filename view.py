@@ -3,6 +3,7 @@ from tkinter import filedialog
 import model,configurations,controller
 from model.complexity import *
 from model.inheritence import *
+from model.ControlStuctureAndNestedControl import *
 
 
 class MainWindow():
@@ -54,19 +55,50 @@ class MainWindow():
 
     def viewSourceCode(self,index):
         selected_class = self.srcComplexity.classList[index]
+        complexity_of_inheritance = calCi(selected_class,self.srcComplexity.classList)
         entries =[]
+        count = 0
         for i,atr in enumerate(selected_class.getAttributeList()):
             # entries.append(Entry(self.codeFrame,width=50))
             # entries[i].grid(row=i,column=0)
             # entries[i].insert(0,atr)
-            Label(self.codeFrame,text=atr,justify=LEFT,width=80,anchor="w").grid(row=i+1,column=0,sticky=W)
-            Label(self.codeFrame,text="s",justify=LEFT,width=2,anchor="w").grid(row=i+1,column=1)
-            Label(self.codeFrame, text="tc", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=2)
-            Label(self.codeFrame, text="nc", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=3)
-            Label(self.codeFrame, text=str(calCi(selected_class,self.srcComplexity.classList)), justify=LEFT, width=2, anchor="w").grid(row=i+1, column=4)
-            Label(self.codeFrame, text="TW", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=5)
-            Label(self.codeFrame, text="ps", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=6)
-            Label(self.codeFrame, text="cr", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=7)
+            complexity_of_tc = identifyControlStructure(atr)
+            row_value = i+1
+            Label(self.codeFrame,text=atr,justify=LEFT,width=80,anchor="w").grid(row=row_value,column=0,sticky=W)
+            Label(self.codeFrame,text="s",justify=LEFT,width=2,anchor="w").grid(row=row_value,column=1)
+            Label(self.codeFrame, text=str(complexity_of_tc), justify=LEFT, width=2, anchor="w").grid(row=row_value, column=2)
+            Label(self.codeFrame, text="nc", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=3)
+            Label(self.codeFrame, text=str(complexity_of_inheritance), justify=LEFT, width=2, anchor="w").grid(row=row_value, column=4)
+            Label(self.codeFrame, text="TW", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=5)
+            Label(self.codeFrame, text="ps", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=6)
+            Label(self.codeFrame, text="cr", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=7)
+            count += 1
+
+        for i,meth in enumerate(selected_class.methodList):
+            #function name title
+            count +=2
+            l_text = str(i+1)+". Function Name - "+meth.methodName
+            Label(self.codeFrame,text=l_text,justify=LEFT,width=80,bg="light blue").grid(row=i+count,column=0,sticky=W)
+            rc = 1
+            if meth.hasRecurtion():
+                rc = 2
+            for j,line in enumerate(meth.getCodeListLineByLine()):
+                count +=1
+                row_value = i + count
+                complexity_of_tc = identifyControlStructure(line)
+                Label(self.codeFrame, text=line, justify=LEFT, width=80, anchor="w").grid(row=row_value, column=0,
+                                                                                         sticky=W)
+                Label(self.codeFrame, text="s", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=1)
+                Label(self.codeFrame, text=str(complexity_of_tc), justify=LEFT, width=2, anchor="w").grid(row=row_value, column=2)
+                Label(self.codeFrame, text="nc", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=3)
+                Label(self.codeFrame, text=str(complexity_of_inheritance), justify=LEFT, width=2, anchor="w").grid(
+                    row=row_value, column=4)
+                Label(self.codeFrame, text="TW", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=5)
+                Label(self.codeFrame, text="ps", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=6)
+                Label(self.codeFrame, text=str(rc), justify=LEFT, width=2, anchor="w").grid(row=row_value, column=7)
+
+
+
 
 
 

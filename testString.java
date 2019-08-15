@@ -12,6 +12,9 @@ public class App {
     setKing(factory.createKing());
     setCastle(factory.createCastle());
     setArmy(factory.createArmy());
+    if(x || y){
+     do.this;
+    }
   }
 }
 
@@ -22,7 +25,7 @@ public class Student extend App{
     private String Address;
 
     public void print(){
-        print.all();
+        print(this);
     }
 
     public void delete(){
