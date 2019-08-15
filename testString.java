@@ -14,3 +14,19 @@ public class App {
     setArmy(factory.createArmy());
   }
 }
+
+
+public class Student{
+    private int sid;
+    private String sname;
+    private String Address;
+
+    public void print(){
+        print.all();
+    }
+
+    public void delete(){
+        delete.all();
+    }
+
+}
