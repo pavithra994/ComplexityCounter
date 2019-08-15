@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import filedialog
 import model,configurations,controller
+from model.complexity import *
+from model.inheritence import *
 
 
 class MainWindow():
@@ -9,63 +11,64 @@ class MainWindow():
         self.root.title("ComplexityCounter | Complexity measuring tool")
         self.root.minsize(640,400)
 
-        # menu bar
-        self.menubar = Menu(self.root)
+        self.topFrame = Frame(self.root)
+        self.topFrame.pack(side=TOP)
 
-        self.filemenu = Menu(self.menubar, tearoff=0)
-        self.filemenu.add_command(label="New", accelerator='Ctrl+N', compound=LEFT, underline=0)
-        self.filemenu.add_command(label="Open", accelerator='Ctrl+O', compound=LEFT, underline=0, command= self.openFile)
-        self.filemenu.add_command(label="Save", accelerator='Ctrl+S', compound=LEFT, underline=0)
-        self.filemenu.add_command(label="Save as", accelerator='Shift+Ctrl+S')
-        self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", accelerator='Alt+F4')
-        self.menubar.add_cascade(label="File", menu=self.filemenu)
+        self.browseLabel = Label(self.topFrame,text="Insert your source file")
+        self.browseLabel.pack(side=LEFT)
 
-        # self.editmenu = Menu(self.menubar, tearoff=0)
-        # self.menubar.add_cascade(label="Edit", menu=self.editmenu)
-        #
-        # self.viewmenu = Menu(self.menubar, tearoff=0)
-        # self.menubar.add_cascade(label="View", menu=self.viewmenu)
+        self.browseButton = Button(self.topFrame,text="Browse",command=self.openFile)
+        self.browseButton.pack()
 
-        self.aboutmenu = Menu(self.menubar, tearoff=0)
-        self.aboutmenu.add_command(label="About")
-        self.aboutmenu.add_command(label="Help")
-        self.menubar.add_cascade(label="About", menu=self.aboutmenu)
+        # self.textBox = Text(self.root, height=5)
+        # self.scrollBar = Scrollbar(self.root)
+        # self.textBox.pack(side=LEFT,fill=Y)
+        # self.scrollBar.pack(side=RIGHT,fill=Y)
+        # self.scrollBar.config(command=self.textBox.yview)
+        # self.textBox.config(yscrollcommand=self.scrollBar.set)
 
-        self.root.config(menu=self.menubar)
+        self.classListFrame = Frame(self.root)
+        self.classListFrame.pack(side=LEFT,fill=Y)
 
-        # shortcut bar
-        self.shortcutbar = Frame(self.root, height=50, bg='light sea green')
-        self.shortcutbar.pack(expand=NO, fill=X)
-        # line number bar left corner
-        self.lnlabel = Label(self.root, width=2, bg='antique white')
-        self.lnlabel.pack(side=LEFT, anchor='nw', fill=Y)
-        # complexity statics bar
-        self.staticFrame = Frame(self.root, width=100, bg='red')
-        self.staticFrame.pack(side=RIGHT, anchor='ne', fill=Y)
+        self.classListLabel = Label(self.classListFrame,text="Class List",bg='yellow')
+        self.classListLabel.pack()
+        self.classList = Listbox(self.classListFrame,selectmode=SINGLE)
+        self.classList.bind('<<ListboxSelect>>',self.class_on_selet)
+        self.classList.pack()
 
-        self.textPad = Text(self.root)
-        self.textPad.pack(expand=YES, fill=BOTH)
-        self.scroll = Scrollbar(self.textPad)
-        self.textPad.configure(yscrollcommand=self.scroll.set)
-        self.scroll.config(command=self.textPad.yview)
-        self.scroll.pack(side=RIGHT, fill=Y)
-        self.textPad.bind("<Any-KeyPress>", self.update_line_number)
+        self.codeFrame = Frame(self.root)
+        self.codeFrame.pack(side=LEFT,fill=Y)
+        Label(self.codeFrame, text="Code List", justify=LEFT, width=50, anchor="w",bg='yellow').grid(row=0,column=0)
+        Label(self.codeFrame, text="s", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=1)
+        Label(self.codeFrame, text="tc", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=2)
+        Label(self.codeFrame, text="nc", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=3)
+        Label(self.codeFrame, text="i", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=4)
+        Label(self.codeFrame, text="TW", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=5)
+        Label(self.codeFrame, text="ps", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=6)
+        Label(self.codeFrame, text="cr", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=7)
 
 
-        # self.upperFrame = Frame(self.root)
-        # self.upperFrame.pack(fill=X)
-        # self.codeAreaFrame = Frame(self.root)
-        # self.codeAreaFrame.pack(side=LEFT,fill=X)
-        # self.codeAreaFrame.place(relwidth=0.8, y=250, anchor=W )
-        #
-        # self.labelFileOpen = Label(self.upperFrame, text="Select your source code")
-        # self.labelFileOpen.grid(column=0,row=1,padx=20,pady=20)
-        # self.buttonBrowse()
+    def class_on_selet(self,evt):
+        class_index = self.classList.curselection()[0]
+        self.viewSourceCode(class_index)
 
-    # def buttonBrowse(self):
-    #     self.browseBtn = Button(self.upperFrame, text="Browse", command= self.openFile)
-    #     self.browseBtn.grid(column=1,row=1,padx=20,pady=20)
+    def viewSourceCode(self,index):
+        selected_class = self.srcComplexity.classList[index]
+        entries =[]
+        for i,atr in enumerate(selected_class.getAttributeList()):
+            # entries.append(Entry(self.codeFrame,width=50))
+            # entries[i].grid(row=i,column=0)
+            # entries[i].insert(0,atr)
+            Label(self.codeFrame,text=atr,justify=LEFT,width=80,anchor="w").grid(row=i+1,column=0,sticky=W)
+            Label(self.codeFrame,text="s",justify=LEFT,width=2,anchor="w").grid(row=i+1,column=1)
+            Label(self.codeFrame, text="tc", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=2)
+            Label(self.codeFrame, text="nc", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=3)
+            Label(self.codeFrame, text=str(calCi(selected_class,self.srcComplexity.classList)), justify=LEFT, width=2, anchor="w").grid(row=i+1, column=4)
+            Label(self.codeFrame, text="TW", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=5)
+            Label(self.codeFrame, text="ps", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=6)
+            Label(self.codeFrame, text="cr", justify=LEFT, width=2, anchor="w").grid(row=i+1, column=7)
+
+
 
     def openFile(self):
         self.srcFile = filedialog.askopenfilename(title="Select your source code",
@@ -75,11 +78,14 @@ class MainWindow():
         # self.labelFileName.configure(text=self.srcFile)
         # self.srcViewer(self.srcFile)
         self.root.title(self.srcFile + " - pyPad")  # Returning the basename of 'file'
-        self.textPad.delete(1.0, END)
+        # self.textPad.delete(1.0, END)
         self.srcFile = open(self.srcFile, "r")
-        self.textPad.insert(1.0, self.srcFile.read())
+        self.srcComplexity = CodeFactory(self.srcFile.read())
+        for i,Cls in enumerate(self.srcComplexity.classList):
+            self.classList.insert(i,Cls.className)
+        # self.textPad.insert(1.0, self.srcFile.read())
         self.srcFile.close()
-        self.update_line_number()
+        # self.update_line_number()
 
     # def srcViewer(self,code):
     #     x = 1
