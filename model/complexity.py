@@ -149,7 +149,7 @@ def indexOfParenthesis(code, start):
 def parentClassFinder(code):
     keywords = code.split(' ')
     for i, segment in enumerate(keywords):
-        if segment == 'extend':
+        if segment == 'extends':
             return keywords[i + 1]
     return 'Object'
 

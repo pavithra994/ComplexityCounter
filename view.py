@@ -4,6 +4,7 @@ import model,configurations,controller
 from model.complexity import *
 from model.inheritence import *
 from model.ControlStuctureAndNestedControl import *
+from model.size import *
 
 
 class MainWindow():
@@ -63,9 +64,11 @@ class MainWindow():
             # entries[i].grid(row=i,column=0)
             # entries[i].insert(0,atr)
             complexity_of_tc = identifyControlStructure(atr)
+            complexity_of_size = sizeComplexity(atr)
+
             row_value = i+1
             Label(self.codeFrame,text=atr,justify=LEFT,width=80,anchor="w").grid(row=row_value,column=0,sticky=W)
-            Label(self.codeFrame,text="s",justify=LEFT,width=2,anchor="w").grid(row=row_value,column=1)
+            Label(self.codeFrame,text=complexity_of_size,justify=LEFT,width=2,anchor="w").grid(row=row_value,column=1)
             Label(self.codeFrame, text=str(complexity_of_tc), justify=LEFT, width=2, anchor="w").grid(row=row_value, column=2)
             Label(self.codeFrame, text="nc", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=3)
             Label(self.codeFrame, text=str(complexity_of_inheritance), justify=LEFT, width=2, anchor="w").grid(row=row_value, column=4)
@@ -86,9 +89,10 @@ class MainWindow():
                 count +=1
                 row_value = i + count
                 complexity_of_tc = identifyControlStructure(line)
+                complexity_of_size = sizeComplexity(line)
                 Label(self.codeFrame, text=line, justify=LEFT, width=80, anchor="w").grid(row=row_value, column=0,
                                                                                          sticky=W)
-                Label(self.codeFrame, text="s", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=1)
+                Label(self.codeFrame, text=complexity_of_size, justify=LEFT, width=2, anchor="w").grid(row=row_value, column=1)
                 Label(self.codeFrame, text=str(complexity_of_tc), justify=LEFT, width=2, anchor="w").grid(row=row_value, column=2)
                 Label(self.codeFrame, text="nc", justify=LEFT, width=2, anchor="w").grid(row=row_value, column=3)
                 Label(self.codeFrame, text=str(complexity_of_inheritance), justify=LEFT, width=2, anchor="w").grid(
