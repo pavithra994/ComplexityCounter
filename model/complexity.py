@@ -212,7 +212,7 @@ def identifyControlStructure(code):
                 Ctc += 1
                 print("In line number : ",num,"-> Ctc with if and && or ||: ",Ctc)
 
-        if re.search('(while)\s*\(.*\)\s*\{',line):
+        elif re.search('(while)\s*\(.*\)\s*\{',line):
             Ctc = 0
             Ctc += 2
             print("In line number : ",num,"-> Ctc with only while : ",Ctc)
@@ -221,7 +221,7 @@ def identifyControlStructure(code):
                 Ctc += 2
                 print("In line number : ",num,"-> Ctc with while and && or ||: ",Ctc)
 
-        if  re.search('(for)\s*\(.*\)\s*\{',line) :
+        elif  re.search('(for)\s*\(.*\)\s*\{',line) :
             Ctc = 0
             Ctc += 2
             print("In line number : ",num,"-> Ctc with only for : ",Ctc)
@@ -230,7 +230,7 @@ def identifyControlStructure(code):
                 Ctc += 2
                 print("In line number : ",num,"-> Ctc with for and && or ||: ",Ctc)
 
-        if  re.search('(do)\s*\{',line) :
+        elif  re.search('(do)\s*\{',line) :
             Ctc = 0
             Ctc += 2
             print("In line number : ",num,"-> Ctc with only do while : ",Ctc)
@@ -239,13 +239,17 @@ def identifyControlStructure(code):
                 Ctc += 2
                 print("In line number : ",num,"-> Ctc with do while and && or ||: ",Ctc)
 
-        if  re.search('(catch)\s*\(.*\)\s*\{',line) :
+        elif  re.search('(catch)\s*\(.*\)\s*\{',line) :
             Ctc = 0
             Ctc += 1
             print("In line number : ",num,"-> Ctc with catch : ",Ctc)
 
-# code = open("java.java")
-# print (identifyControlStructure(code))
+        else:
+            Ctc = 0
+            print (num," -> Ctc : ",Ctc,line)
+
+code = open("java.java")
+print (identifyControlStructure(code))
 
 # testing
 

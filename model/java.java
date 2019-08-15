@@ -1,9 +1,12 @@
 public class fibonicMain{
 	public static long fibonic(long number){
 		if((number == 0 )||(number == 1)){
-			int i = 10;
-            int i = 10;
-            int i = 10;
+            if(number>10){
+                //something here
+            }
+			int number = 10;
+            int number = 10;
+            int number = 10;
             return number;
 		}#end of if
 		else{
