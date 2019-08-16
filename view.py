@@ -22,13 +22,6 @@ class MainWindow():
         self.browseButton = Button(self.topFrame,text="Browse",command=self.openFile)
         self.browseButton.pack()
 
-        # self.textBox = Text(self.root, height=5)
-        # self.scrollBar = Scrollbar(self.root)
-        # self.textBox.pack(side=LEFT,fill=Y)
-        # self.scrollBar.pack(side=RIGHT,fill=Y)
-        # self.scrollBar.config(command=self.textBox.yview)
-        # self.textBox.config(yscrollcommand=self.scrollBar.set)
-
         self.classListFrame = Frame(self.root)
         self.classListFrame.pack(side=LEFT,fill=Y)
 
@@ -38,19 +31,20 @@ class MainWindow():
         self.classList.bind('<<ListboxSelect>>',self.class_on_selet)
         self.classList.pack()
 
-        self.codeFrame = Frame(self.root)
-        self.codeFrame.pack(side=LEFT,fill=Y)
-        Label(self.codeFrame, text="Code List", justify=LEFT, width=50, anchor="w",bg='yellow').grid(row=0,column=0)
-        Label(self.codeFrame, text="s", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=1)
-        Label(self.codeFrame, text="tc", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=2)
-        Label(self.codeFrame, text="nc", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=3)
-        Label(self.codeFrame, text="i", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=4)
-        Label(self.codeFrame, text="TW", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=5)
-        Label(self.codeFrame, text="ps", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=6)
-        Label(self.codeFrame, text="cr", justify=LEFT, width=2, anchor="w",bg='yellow').grid(row=0,column=7)
+        self.codeCanvas = Canvas(self.root)
+        self.codeFrame = Frame(self.codeCanvas)
 
+        self.codeFrame.pack(side=LEFT,fill=Y)
+
+        self.scrollBar = Scrollbar(self.root, orient="vertical", command=self.codeCanvas.yview)
+        self.scrollBar.pack(side=RIGHT, fill=Y)
+        self.scrollBar.config(command=self.codeCanvas.yview)
+        self.codeCanvas.config(yscrollcommand=self.scrollBar.set)
+        self.codeCanvas.pack(fill='both', expand=True, side='left')
 
     def class_on_selet(self,evt):
+        for item in self.codeFrame.winfo_children():
+            item.destroy()
         class_index = self.classList.curselection()[0]
         self.viewSourceCode(class_index)
 
@@ -59,6 +53,15 @@ class MainWindow():
         complexity_of_inheritance = calCi(selected_class,self.srcComplexity.classList)
         entries =[]
         count = 0
+
+        Label(self.codeFrame, text="Code List", justify=LEFT, width=80, anchor="w", bg='yellow').grid(row=0, column=0)
+        Label(self.codeFrame, text="s", justify=LEFT, width=2, anchor="w", bg='yellow').grid(row=0, column=1)
+        Label(self.codeFrame, text="tc", justify=LEFT, width=2, anchor="w", bg='yellow').grid(row=0, column=2)
+        Label(self.codeFrame, text="nc", justify=LEFT, width=2, anchor="w", bg='yellow').grid(row=0, column=3)
+        Label(self.codeFrame, text="i", justify=LEFT, width=2, anchor="w", bg='yellow').grid(row=0, column=4)
+        Label(self.codeFrame, text="TW", justify=LEFT, width=2, anchor="w", bg='yellow').grid(row=0, column=5)
+        Label(self.codeFrame, text="ps", justify=LEFT, width=2, anchor="w", bg='yellow').grid(row=0, column=6)
+        Label(self.codeFrame, text="cr", justify=LEFT, width=2, anchor="w", bg='yellow').grid(row=0, column=7)
         for i,atr in enumerate(selected_class.getAttributeList()):
             # entries.append(Entry(self.codeFrame,width=50))
             # entries[i].grid(row=i,column=0)
@@ -109,12 +112,9 @@ class MainWindow():
     def openFile(self):
         self.srcFile = filedialog.askopenfilename(title="Select your source code",
                                                   filetype=(("java", "*.java"), ("C++", "*.cpp"), ("text", "*.txt")))
-        # self.labelFileName = Label(self.upperFrame,text="")
-        # self.labelFileName.grid(column=2,row=2,padx=20,pady=20)
-        # self.labelFileName.configure(text=self.srcFile)
-        # self.srcViewer(self.srcFile)
-        self.root.title(self.srcFile + " - pyPad")  # Returning the basename of 'file'
-        # self.textPad.delete(1.0, END)
+        self.classList.delete(0,END)
+
+        self.root.title(self.srcFile + " - ComplexityCounter")  # Returning the basename of 'file'
         self.srcFile = open(self.srcFile, "r")
         self.srcComplexity = CodeFactory(self.srcFile.read())
         for i,Cls in enumerate(self.srcComplexity.classList):

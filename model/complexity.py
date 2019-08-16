@@ -12,7 +12,7 @@ import re
 
 class CodeFactory:
     def __init__(self, code):
-        self.code = code
+        self.code = self.commentRemover(code)
         self.classList = []
         # self.classDivider()
         self.setClassList()
@@ -36,6 +36,9 @@ class CodeFactory:
         for i, cls in enumerate(self.classList, 1):
             line1 += str(i) + ".\t" + cls.__str__() + "\n"
         return line1
+
+    def commentRemover(self,code):
+        return re.sub('\/\/.*',"",code)
 
 
 class Class:
