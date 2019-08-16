@@ -69,18 +69,23 @@ def lineCounterOfNestedController(code):
     stack = 0
     line_number = 0
 
-    for num, line in enumerate(code, 1):
-        # count += 1
-        if re.search('(if)\s*\(.*\)\s*\{', line):
-            # count -= 1
-            # count += 1
-            line_number = num
-            if re.search('\s*\(.*\)\s*\{', line):
+    for num, line in enumerate(code,1):
+        if re.search('(while)\s*\(.*\)\s*\{',line):
+            
+            if re.search('\s*\(.*\)\s*\{',line):
+                
                 stack += 1
-
-        if re.search('\s*\}', line):
-            # print(line)
             if stack == 1:
-                count = num - line_number
-                stack -= 1
-    return count
+                line_number += 1 
+        
+        if line_number > 0 :
+            if stack == 1:
+                if re.search('\s*\;',line):
+                    line_number += 1
+                    # print(num)
+            if re.search('\s*\}',line):
+                if stack == 1:
+                    # print (line_number)
+                    return line_number
+                    stack =0
+                    line_number=0
