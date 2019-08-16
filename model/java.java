@@ -1,37 +1,43 @@
-public class fibonicMain{
-	public static long fibonic(long number){
-		if((number == 0 )||(number == 1)){
-            if(number>10){
-                //something here
-            }
-			int number = 10;
-            int number = 10;
-            int number = 10;
+public class FibonacciMain{
+
+    private int x;
+
+
+    public static long fibonacci(long number){
+        if((number == 0) ||(number==1)){
             return number;
-		}#end of if
-		else{
-			// recursion
-			return fibonic(number -1)+fibonic(number -2);
-		}#end of else
-		while ( (x>42) || (y<42) || (n==42) ) { 
-   		/* ... */
-		}#end while
-		for(int i=0; i<10;i++){
-		/* ... */
-		}#end of for
-		do {
-     	statement(s)
-		} while (expression);#end of do while
-	}#end of fibonic method
-	public static void main(Stringargs[]){
-		for(int count = 0;count<=10;count++){
-			System.out.println("dfghgdhjsfh")
-		}
-		try {
-		//  Block of code to try
-		}
-		catch(Exception e) {
-		//  Block of code to handle errors
-		}
-	}
-}#last line
+        }
+        else{
+        return fibonacci(number -1) + fibonacci(number-2);
+        }
+    }
+
+    public void loopTester(int y){
+        for(int x=0;x<5;x++){
+            System.out.print("this is for loop");
+            if(y<4){
+                System.out.print("this is nested if in for loop")
+            }
+        }
+
+        while(true){
+            System.out.print("this is while loop");
+        }
+
+        do{
+            System.out.print("this is do while loop");
+        }while(y)
+    }
+
+}
+
+public class childClass extends FibonacciMain{
+    private int id;
+    private FibonacciMain fb;
+
+    public static void main(String arg[]){
+        id = 354;
+        fb = new FibonacciMain();
+         System.out.print("this is Child Class of FibonacciMain class"
+    }
+}

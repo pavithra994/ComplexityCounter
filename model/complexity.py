@@ -56,7 +56,7 @@ class Class:
             # need will return functions and also  if, while, for, catch
             name = body[indexes.start():indexes.end()].split('(', 1)[0]
             # print(name)
-            if name != 'if':
+            if (name != 'if') and (name != 'for') and (name != 'while'):
                 # print("function name is {}".format(name))
                 s, e = indexOfParenthesis(body, indexes.end() - 1)
                 # print(body[s:e])
