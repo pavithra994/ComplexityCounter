@@ -22,23 +22,50 @@
 import configurations
 
 
-class Model:
-    def __init__(self):
+class CodeComplexity:
+    def __init__(self,code):
+        self.code = code
+        self.classList = []
+        self.setClassList()
+
+    def commentRemover(self,code):
         pass
 
-    def classRecognizer(self,code):
-        self.classesList= []
-
-    def readLineByLine(self,code):
-        self.LineList = []
-        start = 0
-        for i,char in enumerate(code):
-            if char == ';' or char == '{' or char == '}':
-                self.LineList.append(code[start:i+1])
-                start = i+1
-
-        return self.LineList
+    def setClassList(self):
+        pass
 
 
+class JavaComplexity(CodeComplexity):
+    def commentRemover(self, code):
+        super().commentRemover(code)
+
+    def setClassList(self):
+        super().setClassList()
 
 
+class CppComplexity(CodeComplexity):
+    pass
+
+
+
+
+
+class Class:
+    def __init__(self, name, _body, parent_class):
+        self.className = name
+        # self.body = body
+        self.parentClass = parent_class
+        self.methodList = []
+        self.attributeList = []
+        self.complexity = 0
+        # setMethodListAndAttributeList need to implement in CodeComplexity class
+        self.setMethodListAndAttributeList(_body)
+
+    def set_complexity(self,value):
+        self.complexity = value
+
+
+class Method:
+    def __init__(self, name, _code):
+        self.methodName = name
+        self.codeList = _code
