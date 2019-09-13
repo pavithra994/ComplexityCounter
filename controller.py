@@ -2,9 +2,10 @@ from models import *
 
 
 class ComplexityController:
-    def __init__(self,_code):
+    def __init__(self,_code,language):
         # _class => indices
         self.code_complexity = None
+        self.openSourceCode(_code,language)
 
     def calComplexityByLine(self,_line):
         # _line => indices

@@ -127,11 +127,14 @@ def open_file(event=None):
         file_name = input_file_name
         root.title('{} - {}'.format(os.path.basename(file_name), PROGRAM_NAME))
         content_text.delete(1.0, END)
+        class_list_bar.delete(0,END)
         with open(file_name) as _file:
-            code_controller = ComplexityController(_file.read())
+            global code_controller
+            code_controller = ComplexityController(_file.read(),'java')
+            print(code_controller.getClassList())
             for i, _class in enumerate(code_controller.getClassList()):
-                class_list_bar.insert(i,_class)
-            content_text.insert(1.0, _file.read())
+                class_list_bar.insert(i,_class.className)
+            # content_text.insert(1.0, _file.read())
         on_content_changed()
 
 
@@ -248,6 +251,28 @@ def redo(event=None):
     return 'break'
 
 
+def class_list_select(event):
+    class_index = class_list_bar.curselection()[0]
+    load_class(class_index)
+
+
+def load_class(index):
+    selected_class = code_controller.getClassList()[index]
+    content_text.delete(1.0, END)
+    content_text.insert(1.0,selected_class.body)
+    on_content_changed()
+
+
+def on_scrollbar(*args):
+    content_text.yview(*args)
+    line_number_bar.yview(*args)
+
+
+def on_textscroll(*args):
+    scroll_bar.set(*args)
+    on_scrollbar('moveto',args[0])
+
+
 new_file_icon = PhotoImage(file='icons/new_file.gif')
 open_file_icon = PhotoImage(file='icons/open_file.gif')
 save_file_icon = PhotoImage(file='icons/save.gif')
@@ -345,19 +370,24 @@ title_bar = Label(root,height=1)
 title_bar.pack(side='top',fill='x')
 
 class_list_bar = Listbox(root,selectmode=SINGLE)
-class_list_bar.bind('<<ListboxSelect>>',None)
+class_list_bar.bind('<<ListboxSelect>>',class_list_select)
 class_list_bar.pack(side='left',fill='y')
 
 line_number_bar = Text(root, width=20, padx=3, takefocus=0, border=0,
                        background='khaki', state='disabled', wrap='none')
-line_number_bar.pack(side='right', fill='y')
 
 content_text = Text(root, wrap='word', undo=1)
-content_text.pack(expand='yes', fill='both')
 scroll_bar = Scrollbar(content_text)
-content_text.configure(yscrollcommand=scroll_bar.set)
-scroll_bar.config(command=content_text.yview)
+# content_text.configure(yscrollcommand=scroll_bar.set)
+# scroll_bar.config(command=content_text.yview)
+scroll_bar['command'] = on_scrollbar
+content_text['yscrollcommand'] = on_textscroll
+line_number_bar['yscrollcommand'] = on_textscroll
+
 scroll_bar.pack(side='right', fill='y')
+line_number_bar.pack(side='right', fill='y')
+content_text.pack(expand='yes', fill='both')
+
 cursor_info_bar = Label(content_text, text='Line: 1 | Column: 1')
 cursor_info_bar.pack(expand='no', fill=None, side='right', anchor='se')
 
@@ -395,3 +425,5 @@ root.mainloop()
 
 def test():
     pass
+
+
