@@ -1,4 +1,5 @@
 from models import *
+from model.size import *
 
 
 class ComplexityController:
@@ -22,3 +23,7 @@ class ComplexityController:
 
     def getClassList(self):
         return self.code_complexity.classList
+
+
+    def calSize(self,line):
+        return  sizeComplexity(line)

@@ -60,6 +60,31 @@ def update_line_numbers(event=None):
     line_number_bar.insert('1.0', line_numbers)
     line_number_bar.config(state='disabled')
 
+    line_number_bar_left.config(state='normal')
+    line_number_bar_left.delete('1.0', 'end')
+    line_number_bar_left.insert('1.0', line_numbers)
+    line_number_bar_left.config(state='disabled')
+
+
+def update_complexity_size(event=None):
+    _size = get_complexity_size()
+    complexity_bar_size.config(state='normal')
+    complexity_bar_size.delete('1.0', 'end')
+    complexity_bar_size.insert('1.0', _size)
+    complexity_bar_size.config(state='disabled')
+
+
+def get_complexity_size():
+    output = ''
+    if show_line_number.get():
+        row, col = content_text.index("end").split('.')
+        for i in range(1, int(row)):
+            # TODO: create controller to insert code line < content_text.get(str(i)+'.0',str(i)+'.end') >
+            #       and return value add to the output
+            _size = code_controller.calSize(content_text.get(str(i)+'.0',str(i)+'.end'))
+            output += str(_size) + '\n'
+    return output
+
 
 def highlight_line(interval=100):
     content_text.tag_remove("active_line", 1.0, "end")
@@ -82,6 +107,7 @@ def toggle_highlight(event=None):
 def on_content_changed(event=None):
     update_line_numbers()
     update_cursor_info_bar()
+    update_complexity_size()
 
 
 def get_line_numbers():
@@ -266,6 +292,7 @@ def load_class(index):
 def on_scrollbar(*args):
     content_text.yview(*args)
     line_number_bar.yview(*args)
+    line_number_bar_left.yview(*args)
 
 
 def on_textscroll(*args):
@@ -373,8 +400,14 @@ class_list_bar = Listbox(root,selectmode=SINGLE)
 class_list_bar.bind('<<ListboxSelect>>',class_list_select)
 class_list_bar.pack(side='left',fill='y')
 
-line_number_bar = Text(root, width=20, padx=3, takefocus=0, border=0,
+right_frame = Frame(root)
+line_number_bar = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+                       background='khaki', state='disabled', wrap='none') # line number bar right
+line_number_bar_left = Text(root, width=2, padx=3, takefocus=0, border=0,
                        background='khaki', state='disabled', wrap='none')
+
+complexity_bar_size = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+                       background='blue', state='disabled', wrap='none')
 
 content_text = Text(root, wrap='word', undo=1)
 scroll_bar = Scrollbar(content_text)
@@ -383,10 +416,15 @@ scroll_bar = Scrollbar(content_text)
 scroll_bar['command'] = on_scrollbar
 content_text['yscrollcommand'] = on_textscroll
 line_number_bar['yscrollcommand'] = on_textscroll
+line_number_bar_left['yscrollcommand'] = on_textscroll
 
+complexity_bar_size.pack(side='right', fill='y')
+right_frame.pack(side='right',fill='y')
 scroll_bar.pack(side='right', fill='y')
 line_number_bar.pack(side='right', fill='y')
+line_number_bar_left.pack(side='left', fill='y')
 content_text.pack(expand='yes', fill='both')
+
 
 cursor_info_bar = Label(content_text, text='Line: 1 | Column: 1')
 cursor_info_bar.pack(expand='no', fill=None, side='right', anchor='se')
