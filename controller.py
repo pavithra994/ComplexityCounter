@@ -14,11 +14,14 @@ class ComplexityController:
         cs, tc, nc, ci, TW, cps, cr = 0, 0, 0, 0, 0, 0, 0
         selected_class_body = self.code_complexity.classList[_class].body
         s,e = _line[0], _line[1]
-        if self.checkValideLine(_line):
+        if self.checkValideLine(_line,_class):
             cs = sizeComplexity(selected_class_body[s:e]) # temp
             tc = self.code_complexity.type_of_control_complexity(_line,_class)
             nc = self.code_complexity.nested_control_complexity(_line,_class)
-            # ci = calCi(_class,self.code_complexity.classList)
+            ci = self.code_complexity.inheritance_complexity(_class)
+            TW = tc + nc + ci
+            cps = TW * cs
+            cr = self.code_complexity.recursion_complexity(_line,_class,cps)
         return cs, tc, nc, ci, TW, cps, cr
 
     def openSourceCode(self,code,language):
@@ -35,5 +38,9 @@ class ComplexityController:
     def calSize(self,line):
         return sizeComplexity(line)
 
-    def checkValideLine(self,_line):
-        return True
+    def checkValideLine(self,_line,_class):
+        s,e = _line[0], _line[1]
+        line = self.code_complexity.classList[_class].body[s:e]
+        if re.search('\w',line):
+            return True
+        return False

@@ -42,6 +42,9 @@ class CodeComplexity:
     def nested_control_complexity(self):
         pass
 
+    def recursion(self,_line, _class):
+        pass
+
 class JavaComplexity(CodeComplexity):
     def commentRemover(self, code):
         super().commentRemover(code)
@@ -98,6 +101,21 @@ class JavaComplexity(CodeComplexity):
             self.global_nc -= 1
         return self.global_nc
 
+    def inheritance_complexity(self,_class):
+        class_obj = self.classList[_class]
+        if class_obj.parentClass == "Object":
+            return 2
+        else:
+            for i,cl in enumerate(self.classList):
+                if cl.className == class_obj.parentClass:
+                    return self.inheritance_complexity(i) + 1
+
+    def recursion_complexity(self,_line, _class,cps):
+        for method in self.classList[_class].methodList:
+            if method.codeList[0] <= _line[0] <= method.codeList[1]:
+                if method.hasRecurtion():
+                    return cps*2
+        return '-'
 
 class CppComplexity(CodeComplexity):
     pass
@@ -134,13 +152,24 @@ class Class:
                     break
                 s -= 1
 
-            self.methodList.append(Method(name,[s+1,e]))
+            self.methodList.append(Method(name,[s+1,e],self))
 
 
 class Method:
-    def __init__(self, name, _code):
+    def __init__(self, name, _code, _class):
         self.methodName = name
         self.codeList = _code
+        self._class = _class
+
+    def hasRecurtion(self):
+        pattern = self.methodName + '\s*\('
+        s, e = indexOfParenthesis(self._class.body,self.codeList[0])
+        print(s)
+        print(e)
+        code = self._class.body[s:e]
+        if re.search(pattern,code) is None:
+            return False
+        return True
 
 
 def indexOfParenthesis(code, start):

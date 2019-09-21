@@ -467,21 +467,21 @@ line_number_bar = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
 line_number_bar_left = Text(root, width=3, padx=3, takefocus=0, border=0,
                        background='khaki', state='disabled', wrap='none')
 
-complexity_bar_size = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+complexity_bar_size = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
                        background='steelblue', state='disabled', wrap='none')
 
-complexity_bar_tc = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+complexity_bar_tc = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
                        background='skyblue', state='disabled', wrap='none')
 
-complexity_bar_nc = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+complexity_bar_nc = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
                        background='steelblue', state='disabled', wrap='none')
-complexity_bar_ci = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+complexity_bar_ci = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
                        background='skyblue', state='disabled', wrap='none')
-complexity_bar_TW = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+complexity_bar_TW = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
                        background='steelblue', state='disabled', wrap='none')
-complexity_bar_cps = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+complexity_bar_cps = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
                        background='skyblue', state='disabled', wrap='none')
-complexity_bar_cr = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+complexity_bar_cr = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
                        background='steelblue', state='disabled', wrap='none')
 content_text = Text(root, wrap='word', undo=1)
 scroll_bar = Scrollbar(content_text)
