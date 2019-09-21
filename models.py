@@ -29,9 +29,8 @@ class CodeComplexity:
         self.classList = []
         self.setClassList()
         self.global_nc = 0
+        # self.ignore_text_list = []
 
-    def commentRemover(self,code):
-        pass
 
     def setClassList(self):
         pass
@@ -42,16 +41,31 @@ class CodeComplexity:
     def nested_control_complexity(self):
         pass
 
-    def recursion(self,_line, _class):
+    def recursion_complexity(self,_line, _class,cps):
         pass
 
 class JavaComplexity(CodeComplexity):
-    def commentRemover(self, code):
-        super().commentRemover(code)
+
+    # def __init__(self, code):
+    #     super().__init__(code)
+    #     self.set_ignore_text_list()
+
+    # def set_ignore_text_list(self):
+    #     for indexes in re.finditer('\/\/.*', self.code):
+    #         comment = [indexes.start(), indexes.end()]
+    #         self.ignore_text_list.append(comment)
+    #
+    #     # string finder
+    #     for indexes in re.finditer('"([^\\"]|\\")*"', self.code):
+    #         string = [indexes.start(), indexes.end()]
+    #         self.ignore_text_list.append(string)
+
 
     def setClassList(self):
         _end = 0
         for class_index in re.finditer("\sclass\s*", self.code):
+            # for indexes in self.ignore_text_list:
+            #     if indexes[0] <= class_index.start() <= indexes[1]:
             pstart, pend = indexOfParenthesis(self.code, class_index.end())
             class_seg = self.code[class_index.end():pstart].split(' ', 1)
             # class_seg[0] is class name and if there is parent class class_seg[1] is that keywords
@@ -118,7 +132,20 @@ class JavaComplexity(CodeComplexity):
         return '-'
 
 class CppComplexity(CodeComplexity):
-    pass
+    def commentRemover(self,code):
+        pass
+
+    def setClassList(self):
+        pass
+
+    def type_of_control_complexity(self,_line,_class):
+        pass
+
+    def nested_control_complexity(self):
+        pass
+
+    def recursion_complexity(self,_line, _class,cps):
+        pass
 
 
 class Class:

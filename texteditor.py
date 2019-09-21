@@ -33,18 +33,18 @@ def show_popup_menu(event):
 
 
 def show_cursor_info_bar():
-    show_cursor_info_checked = show_cursor_info.get()
-    if show_cursor_info_checked:
-        cursor_info_bar.pack(expand='no', fill=None, side='right', anchor='se')
-    else:
-        cursor_info_bar.pack_forget()
-
+    # show_cursor_info_checked = show_cursor_info.get()
+    # if show_cursor_info_checked:
+    #     cursor_info_bar.pack(expand='no', fill=None, side='right', anchor='se')
+    # else:
+    #     cursor_info_bar.pack_forget()
+    pass
 
 def update_cursor_info_bar(event=None):
     row, col = content_text.index(INSERT).split('.')
     line_num, col_num = str(int(row)), str(int(col) + 1)  # col starts at 0
     infotext = "Line: {0} | Column: {1}".format(line_num, col_num)
-    cursor_info_bar.config(text=infotext)
+    # cursor_info_bar.config(text=infotext)
 
 
 def change_theme(event=None):
@@ -105,6 +105,12 @@ def update_complexity_size(event=None):
     complexity_bar_cr.insert('1.0', _complex[6])
     complexity_bar_cr.config(state='disabled')
 
+# for testing
+    complexity_code_content.config(state='normal')
+    complexity_code_content.delete('1.0', 'end')
+    complexity_code_content.insert('1.0', _complex[7])
+    complexity_code_content.config(state='disabled')
+
 def load_class(index):
     global selected_class
     global selected_class_index
@@ -123,6 +129,7 @@ def load_class(index):
 
 def get_complexity():
     size, tc, nc, ci, TW, cps, cr = '','','','','','',''
+    _test = ''
     row, col = content_text.index("end").split('.')
     for i in range(1, int(row)):
         # TODO: create controller to insert code line < content_text.get(str(i)+'.0',str(i)+'.end') >
@@ -142,7 +149,8 @@ def get_complexity():
         TW += str(_TW) + '\n'
         cps += str(_cps) + '\n'
         cr += str(_cr) + '\n'
-    return [size, tc, nc, ci, TW, cps, cr]
+        _test += selected_class.body[s:e] + '\n'
+    return [size, tc, nc, ci, TW, cps, cr, _test]
 
 
 def highlight_line(interval=100):
@@ -353,6 +361,7 @@ def on_scrollbar(*args):
     complexity_bar_TW.yview(*args)
     complexity_bar_cps.yview(*args)
     complexity_bar_cr.yview(*args)
+    complexity_code_content.yview(*args)
 
 
 def on_textscroll(*args):
@@ -456,33 +465,63 @@ for i, icon in enumerate(icons):
 title_bar = Label(root,height=1)
 title_bar.pack(side='top',fill='x')
 
-class_list_bar = Listbox(root,selectmode=SINGLE)
+class_list_bar_frame = Frame(root)
+class_list_bar_frame.pack(side='left',fill='y')
+class_list_bar_title = Label(class_list_bar_frame,text='Class List')
+class_list_bar_title.pack(anchor='nw')
+class_list_bar = Listbox(class_list_bar_frame,selectmode=SINGLE)
 class_list_bar.bind('<<ListboxSelect>>',class_list_select)
 class_list_bar.pack(side='left',fill='y')
 
 right_frame = Frame(root)
-line_number_bar = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
+line_number_bar_frame = Frame(right_frame, width=3)
+line_number_bar_left_frame = Frame(right_frame, width=3)
+complexity_bar_size_frame = Frame(right_frame, width=3)
+complexity_bar_tc_frame = Frame(right_frame, width=3)
+complexity_bar_nc_frame = Frame(right_frame, width=3)
+complexity_bar_ci_frame = Frame(right_frame, width=3)
+complexity_bar_TW_frame = Frame(right_frame, width=3)
+complexity_bar_cps_frame = Frame(right_frame, width=3)
+complexity_bar_cr_frame = Frame(right_frame, width=3)
+complexity_code_content_frame = Frame(right_frame)
+
+line_number_bar_left_title= Label(line_number_bar_left_frame,text='l#')
+complexity_bar_size_title = Label(complexity_bar_size_frame,text='cs')
+complexity_bar_tc_title= Label(complexity_bar_tc_frame,text='tc')
+complexity_bar_nc_title= Label(complexity_bar_nc_frame,text='nc')
+complexity_bar_ci_title= Label(complexity_bar_ci_frame,text='ci')
+complexity_bar_TW_title= Label(complexity_bar_TW_frame,text='TW')
+complexity_bar_cps_title= Label(complexity_bar_cps_frame,text='cps')
+complexity_bar_cr_title= Label(complexity_bar_cr_frame,text='cr')
+complexity_code_content_title= Label(complexity_code_content_frame,text='Source Code')
+line_number_bar_title = Label(line_number_bar_frame,text='#')
+
+line_number_bar = Text(line_number_bar_frame, width=3, padx=3, takefocus=0, border=0,
                        background='khaki', state='disabled', wrap='none') # line number bar right
-line_number_bar_left = Text(root, width=3, padx=3, takefocus=0, border=0,
+line_number_bar_left = Text(line_number_bar_left_frame, width=3, padx=3, takefocus=0, border=0,
                        background='khaki', state='disabled', wrap='none')
 
-complexity_bar_size = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
+complexity_bar_size = Text(complexity_bar_size_frame, width=3, padx=3, takefocus=0, border=0,
                        background='steelblue', state='disabled', wrap='none')
 
-complexity_bar_tc = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
+complexity_bar_tc = Text(complexity_bar_tc_frame, width=3, padx=3, takefocus=0, border=0,
                        background='skyblue', state='disabled', wrap='none')
 
-complexity_bar_nc = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
+complexity_bar_nc = Text(complexity_bar_nc_frame, width=3, padx=3, takefocus=0, border=0,
                        background='steelblue', state='disabled', wrap='none')
-complexity_bar_ci = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
+complexity_bar_ci = Text(complexity_bar_ci_frame, width=3, padx=3, takefocus=0, border=0,
                        background='skyblue', state='disabled', wrap='none')
-complexity_bar_TW = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
+complexity_bar_TW = Text(complexity_bar_TW_frame, width=3, padx=3, takefocus=0, border=0,
                        background='steelblue', state='disabled', wrap='none')
-complexity_bar_cps = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
+complexity_bar_cps = Text(complexity_bar_cps_frame, width=3, padx=3, takefocus=0, border=0,
                        background='skyblue', state='disabled', wrap='none')
-complexity_bar_cr = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
+complexity_bar_cr = Text(complexity_bar_cr_frame, width=3, padx=3, takefocus=0, border=0,
                        background='steelblue', state='disabled', wrap='none')
-content_text = Text(root, wrap='word', undo=1)
+
+complexity_code_content = Text(complexity_code_content_frame,width=116, padx=3, takefocus=0, border=0,
+                       background='yellow', state='disabled', wrap='word')
+content_text = Text(right_frame,width=1)
+                    #,width=1, wrap='word',padx=3, undo=1,takefocus=0, border=0)
 scroll_bar = Scrollbar(content_text)
 # content_text.configure(yscrollcommand=scroll_bar.set)
 # scroll_bar.config(command=content_text.yview)
@@ -497,8 +536,32 @@ complexity_bar_ci['yscrollcommand'] = on_textscroll
 complexity_bar_TW['yscrollcommand'] = on_textscroll
 complexity_bar_cps['yscrollcommand'] = on_textscroll
 complexity_bar_cr['yscrollcommand'] = on_textscroll
+complexity_code_content['yscrollcommand'] = on_textscroll
 
+# packing
 
+content_text.pack(side='right', fill='y')
+
+complexity_bar_cr_frame.pack(side='right', fill='y')
+complexity_bar_cps_frame.pack(side='right', fill='y')
+complexity_bar_TW_frame.pack(side='right', fill='y')
+complexity_bar_ci_frame.pack(side='right', fill='y')
+complexity_bar_nc_frame.pack(side='right', fill='y')
+complexity_bar_tc_frame.pack(side='right', fill='y')
+complexity_bar_size_frame .pack(side='right', fill='y')
+line_number_bar_left_frame.pack(side='right', fill='y')
+
+complexity_code_content_frame.pack(side='right', fill='y')
+
+line_number_bar_left_title.pack()
+complexity_bar_size_title.pack()
+complexity_bar_tc_title.pack()
+complexity_bar_nc_title.pack()
+complexity_bar_ci_title.pack()
+complexity_bar_TW_title.pack()
+complexity_bar_cps_title.pack()
+complexity_bar_cr_title.pack()
+complexity_code_content_title.pack()
 
 complexity_bar_cr.pack(side='right', fill='y')
 complexity_bar_cps.pack(side='right', fill='y')
@@ -507,15 +570,19 @@ complexity_bar_ci.pack(side='right', fill='y')
 complexity_bar_nc.pack(side='right', fill='y')
 complexity_bar_tc.pack(side='right', fill='y')
 complexity_bar_size.pack(side='right', fill='y')
+line_number_bar_frame.pack(side='right', fill='y')
+
 right_frame.pack(side='right',fill='y')
 scroll_bar.pack(side='right', fill='y')
+line_number_bar_title.pack()
 line_number_bar.pack(side='right', fill='y')
+complexity_code_content.pack(expand='yes', fill='both')
 line_number_bar_left.pack(side='left', fill='y')
-content_text.pack(expand='yes', fill='both')
 
 
-cursor_info_bar = Label(content_text, text='Line: 1 | Column: 1')
-cursor_info_bar.pack(expand='no', fill=None, side='right', anchor='se')
+
+# cursor_info_bar = Label(content_text, text='Line: 1 | Column: 1')
+# cursor_info_bar.pack(expand='no', fill=None, side='right', anchor='se')
 
 content_text.bind('<KeyPress-F1>', display_help_messagebox)
 content_text.bind('<Control-N>', new_file)
