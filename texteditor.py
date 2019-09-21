@@ -112,12 +112,11 @@ def load_class(index):
     selected_class = code_controller.getClassList()[index]
     content_text.delete(1.0, END)
     content_text.insert(1.0,selected_class.body)
-    for method in selected_class.methodList:
-        _code = method.codeList
-        s = indexConverter(_code[0],selected_class.body)
-        e = indexConverter(_code[1],selected_class.body)
-        content_text.tag_add(method.methodName,s,e)
-        content_text.tag_config(method.methodName,foreground='red')
+    for i,comment in enumerate(selected_class.commentList):
+        s = indexConverter(comment[0],selected_class.body)
+        e = indexConverter(comment[1],selected_class.body)
+        content_text.tag_add('c'+str(i),s,e)
+        content_text.tag_config('c'+str(i),foreground='green')
 
     on_content_changed()
 

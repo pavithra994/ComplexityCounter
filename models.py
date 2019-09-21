@@ -131,6 +131,7 @@ class Class:
         self.complexity = 0
         self.commentList = [] # comment = [start index, end index]
         self.setMethodsList()
+        self.setCommentList()
         # setMethodListAndAttributeList need to implement in CodeComplexity class
         # self.setMethodListAndAttributeList(_body)
 
@@ -154,6 +155,10 @@ class Class:
 
             self.methodList.append(Method(name,[s+1,e],self))
 
+    def setCommentList(self):
+        for indexes in re.finditer('\/\/.*',self.body):
+            commnet = [indexes.start(),indexes.end()]
+            self.commentList.append(commnet)
 
 class Method:
     def __init__(self, name, _code, _class):
@@ -250,7 +255,7 @@ public class App {
     }
 
     public void delete(){
-        delete.all();
+        //delete.all();
     }
 
 }'''
