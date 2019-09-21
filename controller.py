@@ -1,17 +1,25 @@
 from models import *
 from model.size import *
-
+# from model.inheritence import *
 
 class ComplexityController:
     def __init__(self,_code,language):
         # _class => indices
         self.code_complexity = None
         self.openSourceCode(_code,language)
+        self.parenthesis_stack = []
 
-    def calComplexityByLine(self,_line):
-        # _line => indices
-        ctc, cnc, cs = 0
-        return ctc, cnc, cs
+    def calComplexityByLine(self,_line,_class):
+        # _line => indices[start:end], _class => index
+        cs, tc, nc, ci, TW, cps, cr = 0, 0, 0, 0, 0, 0, 0
+        selected_class_body = self.code_complexity.classList[_class].body
+        s,e = _line[0], _line[1]
+        if self.checkValideLine(_line):
+            cs = sizeComplexity(selected_class_body[s:e]) # temp
+            tc = self.code_complexity.type_of_control_complexity(_line,_class)
+            nc = self.code_complexity.nested_control_complexity(_line,_class)
+            # ci = calCi(_class,self.code_complexity.classList)
+        return cs, tc, nc, ci, TW, cps, cr
 
     def openSourceCode(self,code,language):
         if language.lower() == 'java':
@@ -24,6 +32,8 @@ class ComplexityController:
     def getClassList(self):
         return self.code_complexity.classList
 
-
     def calSize(self,line):
-        return  sizeComplexity(line)
+        return sizeComplexity(line)
+
+    def checkValideLine(self,_line):
+        return True

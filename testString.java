@@ -1,23 +1,3 @@
-//this is testin java
-
-public class App {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
-
-  private King king;
-  private Castle castle;
-  private Army army;
-
-  public void createKingdom(final KingdomFactory factory) {
-    setKing(factory.createKing());
-    setCastle(factory.createCastle());
-    setArmy(factory.createArmy());
-    if(x || y){
-     do.this;
-    }
-  }
-}
-
 
 public class Student extends App{
     private int sid;
@@ -38,8 +18,16 @@ public class Student extends App{
         r += 8;
 
         if(y==x)
-        !(t!=u)
+        {
+            if(t!=u){
+                thhhd;
+            }
+            fdg
         }
+
+        if((y||u)&&(r||y)
+            dhh;
+     }
 
      public void createKingdom(final KingdomFactory factory) {
     setKing(factory.createKing());
@@ -128,7 +116,3 @@ public class Student extends App{
 	}
 
 }
-
-
-}
-

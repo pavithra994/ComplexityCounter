@@ -22,6 +22,8 @@ root.geometry('350x350')
 root.title(PROGRAM_NAME)
 
 code_controller = None
+selected_class = None
+selected_class_index = None
 
 # show pop-up menu
 
@@ -67,23 +69,81 @@ def update_line_numbers(event=None):
 
 
 def update_complexity_size(event=None):
-    _size = get_complexity_size()
+    _complex = get_complexity()
     complexity_bar_size.config(state='normal')
     complexity_bar_size.delete('1.0', 'end')
-    complexity_bar_size.insert('1.0', _size)
+    complexity_bar_size.insert('1.0', _complex[0])
     complexity_bar_size.config(state='disabled')
 
+    complexity_bar_tc.config(state='normal')
+    complexity_bar_tc.delete('1.0', 'end')
+    complexity_bar_tc.insert('1.0', _complex[1])
+    complexity_bar_tc.config(state='disabled')
 
-def get_complexity_size():
-    output = ''
-    if show_line_number.get():
-        row, col = content_text.index("end").split('.')
-        for i in range(1, int(row)):
-            # TODO: create controller to insert code line < content_text.get(str(i)+'.0',str(i)+'.end') >
-            #       and return value add to the output
-            _size = code_controller.calSize(content_text.get(str(i)+'.0',str(i)+'.end'))
-            output += str(_size) + '\n'
-    return output
+    complexity_bar_nc.config(state='normal')
+    complexity_bar_nc.delete('1.0', 'end')
+    complexity_bar_nc.insert('1.0', _complex[2])
+    complexity_bar_nc.config(state='disabled')
+
+    complexity_bar_ci.config(state='normal')
+    complexity_bar_ci.delete('1.0', 'end')
+    complexity_bar_ci.insert('1.0', _complex[3])
+    complexity_bar_ci.config(state='disabled')
+
+    complexity_bar_TW.config(state='normal')
+    complexity_bar_TW.delete('1.0', 'end')
+    complexity_bar_TW.insert('1.0', _complex[4])
+    complexity_bar_TW.config(state='disabled')
+
+    complexity_bar_cps.config(state='normal')
+    complexity_bar_cps.delete('1.0', 'end')
+    complexity_bar_cps.insert('1.0', _complex[5])
+    complexity_bar_cps.config(state='disabled')
+
+    complexity_bar_cr.config(state='normal')
+    complexity_bar_cr.delete('1.0', 'end')
+    complexity_bar_cr.insert('1.0', _complex[6])
+    complexity_bar_cr.config(state='disabled')
+
+def load_class(index):
+    global selected_class
+    global selected_class_index
+    selected_class_index = index
+    selected_class = code_controller.getClassList()[index]
+    content_text.delete(1.0, END)
+    content_text.insert(1.0,selected_class.body)
+    for method in selected_class.methodList:
+        _code = method.codeList
+        s = indexConverter(_code[0],selected_class.body)
+        e = indexConverter(_code[1],selected_class.body)
+        content_text.tag_add(method.methodName,s,e)
+        content_text.tag_config(method.methodName,foreground='red')
+
+    on_content_changed()
+
+
+def get_complexity():
+    size, tc, nc, ci, TW, cps, cr = '','','','','','',''
+    row, col = content_text.index("end").split('.')
+    for i in range(1, int(row)):
+        # TODO: create controller to insert code line < content_text.get(str(i)+'.0',str(i)+'.end') >
+        #       and return value add to the output
+        start = str(i) + '.0'
+        end = content_text.index(str(i) + '.end')
+        s = indexConverter(start, selected_class.body)
+        e = indexConverter(end, selected_class.body)
+        # _size = code_controller.calSize(content_text.get(start, end))
+        _size, _tc, _nc, _ci, _TW, _cps, _cr = code_controller.calComplexityByLine([s,e],selected_class_index)
+        # TODO : something wrong with size
+        
+        size += str(_size) + '\n'
+        tc += str(_tc)+ '\n'
+        nc += str(_nc)+ '\n'
+        ci += str(_ci) + '\n'
+        TW += str(_TW) + '\n'
+        cps += str(_cps) + '\n'
+        cr += str(_cr) + '\n'
+    return [size, tc, nc, ci, TW, cps, cr]
 
 
 def highlight_line(interval=100):
@@ -282,17 +342,18 @@ def class_list_select(event):
     load_class(class_index)
 
 
-def load_class(index):
-    selected_class = code_controller.getClassList()[index]
-    content_text.delete(1.0, END)
-    content_text.insert(1.0,selected_class.body)
-    on_content_changed()
-
 
 def on_scrollbar(*args):
     content_text.yview(*args)
     line_number_bar.yview(*args)
     line_number_bar_left.yview(*args)
+    complexity_bar_size.yview(*args)
+    complexity_bar_tc.yview(*args)
+    complexity_bar_nc.yview(*args)
+    complexity_bar_ci.yview(*args)
+    complexity_bar_TW.yview(*args)
+    complexity_bar_cps.yview(*args)
+    complexity_bar_cr.yview(*args)
 
 
 def on_textscroll(*args):
@@ -401,14 +462,27 @@ class_list_bar.bind('<<ListboxSelect>>',class_list_select)
 class_list_bar.pack(side='left',fill='y')
 
 right_frame = Frame(root)
-line_number_bar = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+line_number_bar = Text(right_frame, width=3, padx=3, takefocus=0, border=0,
                        background='khaki', state='disabled', wrap='none') # line number bar right
-line_number_bar_left = Text(root, width=2, padx=3, takefocus=0, border=0,
+line_number_bar_left = Text(root, width=3, padx=3, takefocus=0, border=0,
                        background='khaki', state='disabled', wrap='none')
 
 complexity_bar_size = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
-                       background='blue', state='disabled', wrap='none')
+                       background='steelblue', state='disabled', wrap='none')
 
+complexity_bar_tc = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+                       background='skyblue', state='disabled', wrap='none')
+
+complexity_bar_nc = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+                       background='steelblue', state='disabled', wrap='none')
+complexity_bar_ci = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+                       background='skyblue', state='disabled', wrap='none')
+complexity_bar_TW = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+                       background='steelblue', state='disabled', wrap='none')
+complexity_bar_cps = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+                       background='skyblue', state='disabled', wrap='none')
+complexity_bar_cr = Text(right_frame, width=2, padx=3, takefocus=0, border=0,
+                       background='steelblue', state='disabled', wrap='none')
 content_text = Text(root, wrap='word', undo=1)
 scroll_bar = Scrollbar(content_text)
 # content_text.configure(yscrollcommand=scroll_bar.set)
@@ -417,7 +491,22 @@ scroll_bar['command'] = on_scrollbar
 content_text['yscrollcommand'] = on_textscroll
 line_number_bar['yscrollcommand'] = on_textscroll
 line_number_bar_left['yscrollcommand'] = on_textscroll
+complexity_bar_size['yscrollcommand'] = on_textscroll
+complexity_bar_tc['yscrollcommand'] = on_textscroll
+complexity_bar_nc['yscrollcommand'] = on_textscroll
+complexity_bar_ci['yscrollcommand'] = on_textscroll
+complexity_bar_TW['yscrollcommand'] = on_textscroll
+complexity_bar_cps['yscrollcommand'] = on_textscroll
+complexity_bar_cr['yscrollcommand'] = on_textscroll
 
+
+
+complexity_bar_cr.pack(side='right', fill='y')
+complexity_bar_cps.pack(side='right', fill='y')
+complexity_bar_TW.pack(side='right', fill='y')
+complexity_bar_ci.pack(side='right', fill='y')
+complexity_bar_nc.pack(side='right', fill='y')
+complexity_bar_tc.pack(side='right', fill='y')
 complexity_bar_size.pack(side='right', fill='y')
 right_frame.pack(side='right',fill='y')
 scroll_bar.pack(side='right', fill='y')

@@ -69,6 +69,7 @@
 #___________________________________________________________________
 
 from collections import deque
+import re
 
 # you can initialize a deque with a list 
 numbers = deque()
@@ -89,3 +90,16 @@ print(numbers) # deque([99, 15, 82, 50])
 first_item = numbers.popleft()
 print(first_item) # 99
 print(numbers) # deque([15, 82, 50])
+
+t = '        if((number && 0) ||(number||1)){'
+func_set = re.findall('\w*\s*\(.*\)', t)
+for func in func_set:
+    func_name = func.split('(',1)[0].strip()
+    func_condition = func.split('(',1)[1].strip()
+    condition_set = re.findall('&&|\|\|',func_condition)
+
+
+
+
+
+

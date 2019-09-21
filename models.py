@@ -28,6 +28,7 @@ class CodeComplexity:
         self.code = code
         self.classList = []
         self.setClassList()
+        self.global_nc = 0
 
     def commentRemover(self,code):
         pass
@@ -35,6 +36,11 @@ class CodeComplexity:
     def setClassList(self):
         pass
 
+    def type_of_control_complexity(self,_line,_class):
+        pass
+
+    def nested_control_complexity(self):
+        pass
 
 class JavaComplexity(CodeComplexity):
     def commentRemover(self, code):
@@ -52,9 +58,45 @@ class JavaComplexity(CodeComplexity):
             except IndexError:
                 parent_name = 'Object'
             class_body = self.code[_end:pend].strip()
-            self.classList.append(Class(class_name, class_body, parent_name))
+            self.classList.append(Class(class_name, '\n'+class_body, parent_name))
             _end = pend
 
+    def functionRecognizer(self,_line):
+        # _func = re.match()
+        return None
+
+    def type_of_control_complexity(self,_line,_class):
+        body = self.classList[_class].body
+        tc = 0
+        func_set = re.findall('\w*\s*\(.*\)', body[_line[0]:_line[1]])
+        for func in func_set:
+            func_name = func.split('(',1)[0].strip()
+            func_condition = func.split('(',1)[1].strip()
+            if func_name == 'if':
+                tc +=1
+            if func_name == 'for':
+                tc +=2
+            if func_name == 'while':
+                tc +=2
+            if func_name == 'catch':
+                tc += 1
+            condition_set = re.findall('&&|\|\|', func_condition)
+            for _condition in condition_set:
+                tc += 1
+        # TODO: switch case
+        return tc
+
+    def nested_control_complexity(self,_line,_class):
+        body = self.classList[_class].body
+        nc = 0
+        func_set = re.findall('\w*\s*\(.*\)', body[_line[0]:_line[1]])
+        for func in func_set:
+            func_name = func.split('(', 1)[0].strip()
+            if func_name == 'if':
+                self.global_nc += 1
+        if re.search('}',body[_line[0]:_line[1]]) and self.global_nc > 0:
+            self.global_nc -= 1
+        return self.global_nc
 
 
 class CppComplexity(CodeComplexity):
@@ -69,11 +111,30 @@ class Class:
         self.methodList = []
         self.attributeList = []
         self.complexity = 0
+        self.commentList = [] # comment = [start index, end index]
+        self.setMethodsList()
         # setMethodListAndAttributeList need to implement in CodeComplexity class
         # self.setMethodListAndAttributeList(_body)
 
     def set_complexity(self,value):
         self.complexity = value
+
+    def setMethodsList(self):
+        for indexes in re.finditer("\w*\s*\(.*\)\s*\{", self.body):
+            # for comment in self.commentList:
+            #     if not (comment[0] <= indexes.start() <= comment[1]):
+            name = self.body[indexes.start():indexes.end()].split('(', 1)[0]
+
+            if (name != 'if') and (name != 'for') and (name != 'while'):
+                # print("function name is {}".format(name))
+                s, e = indexOfParenthesis(self.body, indexes.end() - 1)
+                _s=s
+            for c in self.body[_s::-1]:
+                if c == '\n':
+                    break
+                s -= 1
+
+            self.methodList.append(Method(name,[s+1,e]))
 
 
 class Method:
@@ -107,6 +168,29 @@ def parentClassFinder(code):
             return keywords[i + 1]
     return 'Object'
 
+def indexConverter(index,text):
+    _line, _char, _index = 0, 0, 0
+    # if insert 'line.colunm' return str index
+    if type(index) is str:
+        r, c = index.split('.')
+        _line = 1
+        for ch in text:
+            _index += 1
+            if ch == '\n':
+                _line +=1
+            if _line == int(r):
+                if _char == int(c):
+                    break
+                _char +=1
+        if int(r)==1:
+            return _index - 1
+        return _index
+    for line in text[:index].split('\n'):
+        _char = 0
+        _line +=1
+        for c in line:
+            _char +=1
+    return str(_line)+'.'+str(_char)
 
 ### test codes here ###
 
@@ -143,3 +227,4 @@ public class App {
 }'''
 
 c = JavaComplexity(code)
+

@@ -23,7 +23,9 @@ class Programmer extends Employee{
 
 # ashimi try this
     
-def calCi(class_obj,class_list):
+def calCi(_class,class_list):
+    # if _class is str:
+    class_obj = class_list[int(_class)]
     if class_obj.parentClass == "Object":
         return 2
     else:
