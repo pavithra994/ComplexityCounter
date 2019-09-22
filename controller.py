@@ -8,6 +8,7 @@ class ComplexityController:
         self.code_complexity = None
         self.openSourceCode(_code,language)
         self.parenthesis_stack = []
+        self.total_complexity = 0
 
     def calComplexityByLine(self,_line,_class):
         # _line => indices[start:end], _class => index
@@ -15,7 +16,7 @@ class ComplexityController:
         selected_class_body = self.code_complexity.classList[_class].body
         s,e = _line[0], _line[1]
         if self.checkValideLine(_line,_class):
-            cs = sizeComplexity(selected_class_body[s:e]) # temp
+            cs = self.code_complexity.size_complexity(_line,_class)
             tc = self.code_complexity.type_of_control_complexity(_line,_class)
             nc = self.code_complexity.nested_control_complexity(_line,_class)
             ci = self.code_complexity.inheritance_complexity(_class)
@@ -23,6 +24,14 @@ class ComplexityController:
             cps = TW * cs
             cr = self.code_complexity.recursion_complexity(_line,_class,cps)
         return cs, tc, nc, ci, TW, cps, cr
+
+    def cal_total_complexity(self,cps,cr):
+        if cr == '-':
+            self.total_complexity += int(cps)
+        else:
+            self.total_complexity += int(cr)
+
+
 
     def openSourceCode(self,code,language):
         if language.lower() == 'java':
@@ -46,3 +55,4 @@ class ComplexityController:
         return False
     def reset_all(self):
         self.code_complexity.global_nc = 0
+        self.total_complexity = 0

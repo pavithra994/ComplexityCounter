@@ -118,6 +118,8 @@ def update_complexity_size(event=None):
     complexity_code_content.insert('1.0', _complex[7])
     complexity_code_content.config(state='disabled')
 
+    total_complexity['text'] = str(_complex[8])
+
 def load_class(index):
     reset_all()
     global selected_class
@@ -129,8 +131,8 @@ def load_class(index):
     for i,comment in enumerate(selected_class.commentList):
         s = indexConverter(comment[0],selected_class.body)
         e = indexConverter(comment[1],selected_class.body)
-        content_text.tag_add('c'+str(i),s,e)
-        content_text.tag_config('c'+str(i),foreground='green')
+        complexity_code_content.tag_add('c'+str(i),s,e)
+        complexity_code_content.tag_config('c'+str(i),foreground='green')
 
     on_content_changed()
 
@@ -158,7 +160,9 @@ def get_complexity():
         cps += str(_cps) + '\n'
         cr += str(_cr) + '\n'
         _test += selected_class.body[s:e] + '\n'
-    return [size, tc, nc, ci, TW, cps, cr, _test]
+        code_controller.cal_total_complexity(_cps,_cr)
+        _total = code_controller.total_complexity
+    return [size, tc, nc, ci, TW, cps, cr, _test,_total]
 
 
 def highlight_line(interval=100):
@@ -451,6 +455,8 @@ for i, icon in enumerate(icons):
     tool_bar.image = tool_bar_icon
     tool_bar.pack(side='left')
 
+total_complexity = Label(shortcut_bar, text= 'To check complexity click the class   ',font= 'Times 15 bold')
+total_complexity.pack(side='right')
 title_bar = Label(root,height=1)
 title_bar.pack(side='top',fill='x')
 

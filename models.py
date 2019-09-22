@@ -146,6 +146,52 @@ class JavaComplexity(CodeComplexity):
                     return cps*2
         return '-'
 
+    def size_complexity(self,_line,_class):
+        total_size = 0
+        line = self.classList[_class].body[_line[0]:_line[1]]
+        line = line.strip(';')
+        size_tem, line = self.get_and_trim_strings(line)
+        total_size += size_tem
+        # find and count relational, logical, assignment operators and replace <<space>>
+        pattern = '\+\+|\-\-|\+=|\-=|\*=|\/=|==|!=|>|<|<=|>=|&&|\|\||!'
+        total_size += len(re.findall(pattern, line))
+        line = re.sub(pattern, " ", line)
+        pattern = '=|\+|\-|\*|\/|\%|\,|\.'
+        total_size += len(re.findall(pattern, line))
+        line = re.sub(pattern, " ", line)
+
+        # replace all ; {} () with space
+        pattern = ';|{|}|\(|\)'
+        line = re.sub(pattern, " ", line)
+        # split into keywords
+        keywords = line.split()
+
+        # total_size += len(keywords)
+        for keyword in keywords:
+            if keyword == 'new' or keyword == 'delete' or keyword == 'throw' or keyword == 'throws':
+                total_size += 2
+            else:
+                total_size += 1
+
+        return total_size
+
+
+
+    def get_and_trim_strings(self,line):
+        count = 0
+        mainpulator = 0
+        _line = line
+        for indexes in re.finditer('"([^\\"]|\\")*"', line):
+            # pattern = '\\(n|t' +')'
+            # for indexes2 in re.finditer(pattern, line[indexes.start():indexes.end()]):
+            #     mainpulator += 1
+            _line = _line[:indexes.start()]+ _line[indexes.end():]
+            count +=1
+
+        return count, _line
+
+
+
 class CppComplexity(CodeComplexity):
     def set_ignore_text_list(self):
         for indexes in re.finditer('\/\/.*', self.code):
