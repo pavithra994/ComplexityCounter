@@ -27,10 +27,14 @@ class CodeComplexity:
     def __init__(self,code):
         self.code = code
         self.classList = []
-        self.setClassList()
         self.global_nc = 0
-        # self.ignore_text_list = []
+        self.ignore_text_list = []
+        self.set_ignore_text_list()
+        self.setClassList()
 
+
+    def set_ignore_text_list(self):
+        pass
 
     def setClassList(self):
         pass
@@ -41,6 +45,9 @@ class CodeComplexity:
     def nested_control_complexity(self):
         pass
 
+    def inheritance_complexity(self, _class):
+        pass
+
     def recursion_complexity(self,_line, _class,cps):
         pass
 
@@ -48,24 +55,25 @@ class JavaComplexity(CodeComplexity):
 
     # def __init__(self, code):
     #     super().__init__(code)
-    #     self.set_ignore_text_list()
 
-    # def set_ignore_text_list(self):
-    #     for indexes in re.finditer('\/\/.*', self.code):
-    #         comment = [indexes.start(), indexes.end()]
-    #         self.ignore_text_list.append(comment)
-    #
-    #     # string finder
-    #     for indexes in re.finditer('"([^\\"]|\\")*"', self.code):
-    #         string = [indexes.start(), indexes.end()]
-    #         self.ignore_text_list.append(string)
+    def set_ignore_text_list(self):
+        # TODO: check indexes are correct
+        for indexes in re.finditer('\/\/.*', self.code):
+            # comment = [indexes.start(), indexes.end()]
+            for index in range(indexes.start(), indexes.end()):
+                self.ignore_text_list.append(index)
+
+        # string finder
+        for indexes in re.finditer('"([^\\"]|\\")*"', self.code):
+            for index in range(indexes.start(), indexes.end()):
+                self.ignore_text_list.append(index)
 
 
     def setClassList(self):
         _end = 0
         for class_index in re.finditer("\sclass\s*", self.code):
-            # for indexes in self.ignore_text_list:
-            #     if indexes[0] <= class_index.start() <= indexes[1]:
+            if class_index.start() in self.ignore_text_list:
+                continue
             pstart, pend = indexOfParenthesis(self.code, class_index.end())
             class_seg = self.code[class_index.end():pstart].split(' ', 1)
             # class_seg[0] is class name and if there is parent class class_seg[1] is that keywords
@@ -77,6 +85,10 @@ class JavaComplexity(CodeComplexity):
             class_body = self.code[_end:pend].strip()
             self.classList.append(Class(class_name, '\n'+class_body, parent_name))
             _end = pend
+
+        if len(self.classList) is 0:
+            self.classList.append(Class('None', '\n'+self.code, 'None'))
+
 
     def functionRecognizer(self,_line):
         # _func = re.match()
@@ -115,8 +127,11 @@ class JavaComplexity(CodeComplexity):
             self.global_nc -= 1
         return self.global_nc
 
+
     def inheritance_complexity(self,_class):
         class_obj = self.classList[_class]
+        if class_obj.parentClass == 'None':
+            return 1
         if class_obj.parentClass == "Object":
             return 2
         else:
@@ -132,21 +147,87 @@ class JavaComplexity(CodeComplexity):
         return '-'
 
 class CppComplexity(CodeComplexity):
-    def commentRemover(self,code):
-        pass
+    def set_ignore_text_list(self):
+        for indexes in re.finditer('\/\/.*', self.code):
+            # comment = [indexes.start(), indexes.end()]
+            for index in range(indexes.start(), indexes.end()):
+                self.ignore_text_list.append(index)
+
+        # string finder
+        for indexes in re.finditer('"([^\\"]|\\")*"', self.code):
+            for index in range(indexes.start(), indexes.end()):
+                self.ignore_text_list.append(index)
 
     def setClassList(self):
-        pass
+        _end = 0
+        for class_index in re.finditer("\sclass\s*", self.code):
+            if class_index.start() in self.ignore_text_list:
+                continue
+            pstart, pend = indexOfParenthesis(self.code, class_index.end())
+            class_seg = self.code[class_index.end():pstart].split(' ', 1)
+            # class_seg[0] is class name and if there is parent class class_seg[1] is that keywords
+            class_name = class_seg[0]
+            try:
+                parent_name = parentClassFinder(class_seg[1])
+            except IndexError:
+                parent_name = 'Object'
+            class_body = self.code[_end:pend].strip()
+            self.classList.append(Class(class_name, '\n' + class_body, parent_name))
+            _end = pend
+
+        if len(self.classList) is 0:
+            self.classList.append(Class('None', '\n' + self.code, 'None'))
 
     def type_of_control_complexity(self,_line,_class):
-        pass
+        body = self.classList[_class].body
+        tc = 0
+        func_set = re.findall('\w*\s*\(.*\)', body[_line[0]:_line[1]])
+        for func in func_set:
+            func_name = func.split('(', 1)[0].strip()
+            func_condition = func.split('(', 1)[1].strip()
+            if func_name == 'if':
+                tc += 1
+            if func_name == 'for':
+                tc += 2
+            if func_name == 'while':
+                tc += 2
+            if func_name == 'catch':
+                tc += 1
+            condition_set = re.findall('&&|\|\|', func_condition)
+            for _condition in condition_set:
+                tc += 1
+        # TODO: switch case
+        return tc
 
-    def nested_control_complexity(self):
-        pass
+    def nested_control_complexity(self,_line,_class):
+        body = self.classList[_class].body
+        nc = 0
+        func_set = re.findall('\w*\s*\(.*\)', body[_line[0]:_line[1]])
+        for func in func_set:
+            func_name = func.split('(', 1)[0].strip()
+            if func_name == 'if':
+                self.global_nc += 1
+        if re.search('}', body[_line[0]:_line[1]]) and self.global_nc > 0:
+            self.global_nc -= 1
+        return self.global_nc
 
-    def recursion_complexity(self,_line, _class,cps):
-        pass
+    def inheritance_complexity(self, _class):
+        class_obj = self.classList[_class]
+        if class_obj.parentClass == 'None':
+            return 1
+        if class_obj.parentClass == "Object":
+            return 2
+        else:
+            for i, cl in enumerate(self.classList):
+                if cl.className == class_obj.parentClass:
+                    return self.inheritance_complexity(i) + 1
 
+    def recursion_complexity(self, _line, _class, cps):
+        for method in self.classList[_class].methodList:
+            if method.codeList[0] <= _line[0] <= method.codeList[1]:
+                if method.hasRecurtion():
+                    return cps * 2
+        return '-'
 
 class Class:
     def __init__(self, name, _body, parent_class):

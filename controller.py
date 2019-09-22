@@ -31,7 +31,7 @@ class ComplexityController:
             self.code_complexity = CppComplexity(code)
         else:
             print("error")
-
+            raise Exception('ComplexityCounter support JAVA and C++ only')
     def getClassList(self):
         return self.code_complexity.classList
 
@@ -44,3 +44,5 @@ class ComplexityController:
         if re.search('\w',line):
             return True
         return False
+    def reset_all(self):
+        self.code_complexity.global_nc = 0

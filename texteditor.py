@@ -14,11 +14,11 @@ import tkinter.messagebox
 import re
 from controller import *
 
-PROGRAM_NAME = "Footprint Editor"
+PROGRAM_NAME = "ComplexityCounter"
 file_name = None
 
 root = Tk()
-root.geometry('350x350')
+root.geometry('1080x720')
 root.title(PROGRAM_NAME)
 
 code_controller = None
@@ -26,7 +26,14 @@ selected_class = None
 selected_class_index = None
 
 # show pop-up menu
-
+def reset_all():
+    global code_controller
+    global selected_class
+    global selected_class_index
+    if code_controller:
+        code_controller.reset_all()
+    selected_class = None
+    selected_class_index = None
 
 def show_popup_menu(event):
     popup_menu.tk_popup(event.x_root, event.y_root)
@@ -112,6 +119,7 @@ def update_complexity_size(event=None):
     complexity_code_content.config(state='disabled')
 
 def load_class(index):
+    reset_all()
     global selected_class
     global selected_class_index
     selected_class_index = index
@@ -178,13 +186,12 @@ def on_content_changed(event=None):
 
 
 def get_line_numbers():
-    output = ''
-    if show_line_number.get():
-        row, col = content_text.index("end").split('.')
-        for i in range(1, int(row)):
-            # TODO: create controller to insert code line < content_text.get(str(i)+'.0',str(i)+'.end') >
-            #       and return value add to the output
-            output += str(i) + '\n'
+    output = '\n'
+    row, col = content_text.index("end").split('.')
+    for i in range(1, int(row)):
+        # TODO: create controller to insert code line < content_text.get(str(i)+'.0',str(i)+'.end') >
+        #       and return value add to the output
+        output += str(i) + '\n'
     return output
 
 
@@ -218,13 +225,18 @@ def open_file(event=None):
     if input_file_name:
         global file_name
         file_name = input_file_name
+        language = file_name.split('.')[1]
         root.title('{} - {}'.format(os.path.basename(file_name), PROGRAM_NAME))
         content_text.delete(1.0, END)
         class_list_bar.delete(0,END)
         with open(file_name) as _file:
             global code_controller
-            code_controller = ComplexityController(_file.read(),'java')
-            print(code_controller.getClassList())
+            try:
+                code_controller = ComplexityController(_file.read(),language)
+            except Exception as e:
+                tkinter.messagebox.showinfo(
+                    "Input Error", '{} This file is not valid input.\n{}'.format(file_name,e))
+            # print(code_controller.getClassList())
             for i, _class in enumerate(code_controller.getClassList()):
                 class_list_bar.insert(i,_class.className)
             # content_text.insert(1.0, _file.read())
@@ -380,30 +392,15 @@ redo_icon = PhotoImage(file='icons/redo.gif')
 
 menu_bar = Menu(root)
 file_menu = Menu(menu_bar, tearoff=0)
-file_menu.add_command(label='New', accelerator='Ctrl+N', compound='left',
-                      image=new_file_icon, underline=0, command=new_file)
 file_menu.add_command(label='Open', accelerator='Ctrl+O', compound='left',
                       image=open_file_icon, underline=0, command=open_file)
-file_menu.add_command(label='Save', accelerator='Ctrl+S',
-                      compound='left', image=save_file_icon, underline=0, command=save)
-file_menu.add_command(
-    label='Save as', accelerator='Shift+Ctrl+S', command=save_as)
 file_menu.add_separator()
 file_menu.add_command(label='Exit', accelerator='Alt+F4', command=exit_editor)
 menu_bar.add_cascade(label='File', menu=file_menu)
 
 edit_menu = Menu(menu_bar, tearoff=0)
-edit_menu.add_command(label='Undo', accelerator='Ctrl+Z',
-                      compound='left', image=undo_icon, command=undo)
-edit_menu.add_command(label='Redo', accelerator='Ctrl+Y',
-                      compound='left', image=redo_icon, command=redo)
-edit_menu.add_separator()
-edit_menu.add_command(label='Cut', accelerator='Ctrl+X',
-                      compound='left', image=cut_icon, command=cut)
 edit_menu.add_command(label='Copy', accelerator='Ctrl+C',
                       compound='left', image=copy_icon, command=copy)
-edit_menu.add_command(label='Paste', accelerator='Ctrl+V',
-                      compound='left', image=paste_icon, command=paste)
 edit_menu.add_separator()
 edit_menu.add_command(label='Find', underline=0,
                       accelerator='Ctrl+F', command=find_text)
@@ -413,14 +410,7 @@ edit_menu.add_command(label='Select All', underline=7,
 menu_bar.add_cascade(label='Edit', menu=edit_menu)
 
 view_menu = Menu(menu_bar, tearoff=0)
-show_line_number = IntVar()
-show_line_number.set(1)
-view_menu.add_checkbutton(label='Show Line Number', variable=show_line_number,
-                          command=update_line_numbers)
-show_cursor_info = IntVar()
-show_cursor_info.set(1)
-view_menu.add_checkbutton(
-    label='Show Cursor Location at Bottom', variable=show_cursor_info, command=show_cursor_info_bar)
+
 to_highlight_line = BooleanVar()
 view_menu.add_checkbutton(label='Highlight Current Line', onvalue=1,
                           offvalue=0, variable=to_highlight_line, command=toggle_highlight)
@@ -453,8 +443,7 @@ root.config(menu=menu_bar)
 shortcut_bar = Frame(root, height=25)
 shortcut_bar.pack(expand='no', fill='x')
 
-icons = ('new_file', 'open_file', 'save', 'cut', 'copy', 'paste',
-         'undo', 'redo', 'find_text')
+icons = ('open_file','copy','find_text')
 for i, icon in enumerate(icons):
     tool_bar_icon = PhotoImage(file='icons/{}.gif'.format(icon))
     cmd = eval(icon)
